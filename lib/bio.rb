@@ -270,6 +270,7 @@ module Bio
   autoload :ColorScheme,    'bio/util/color_scheme'
   autoload :ContingencyTable, 'bio/util/contingency_table'
   autoload :RestrictionEnzyme, 'bio/util/restriction_enzyme'
+  autoload :RNAFold,      'bio/util/rna_fold'
 
   ### Service libraries
   autoload :Command,        'bio/command'
