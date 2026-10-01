@@ -51,6 +51,15 @@ class NA < String
 
   include Bio::Sequence::Common
 
+  # Builds a Bio::Sequence::MinimalAbsentWordsIndex for this DNA record and
+  # enumerates minimal absent words within the requested length range.
+  def minimal_absent_words(min_length = 1, max_length = nil, &block)
+    require 'bio/sequence/minimal_absent_words'
+    Bio::Sequence::MinimalAbsentWordsIndex
+      .new(self)
+      .each(min_length, max_length, &block)
+  end
+
   # Generate an nucleic acid sequence object from a string.
   #
   #   s = Bio::Sequence::NA.new("aagcttggaccgttgaagt")
@@ -537,4 +546,3 @@ end # NA
 end # Sequence
 
 end # Bio
-

@@ -1,0 +1,38 @@
+# Type signatures for Bio::Sequence::MinimalAbsentWordsIndex
+
+module Bio
+  class Sequence
+    class MinimalAbsentWordsIndex
+      include Enumerable[Word]
+
+      ALPHABET: Array[String]
+
+      class Occurrence
+        attr_reader record_index: Integer
+        attr_reader offset: Integer
+
+        def initialize: (record_index: Integer, offset: Integer) -> void
+      end
+
+      class Word
+        attr_reader word: String
+        attr_reader prefix_occurrence: Occurrence?
+        attr_reader suffix_occurrence: Occurrence?
+
+        def initialize: (word: String,
+                         prefix_occurrence: Occurrence?,
+                         suffix_occurrence: Occurrence?) -> void
+      end
+
+      def initialize: (*untyped sequences) -> void
+      def each: (?Integer min_length, ?Integer? max_length) { (Word) -> void } -> nil
+              | (?Integer min_length, ?Integer? max_length) -> Enumerator[Word, void]
+      def self.each: (untyped sequences,
+                      ?Integer min_length,
+                      ?Integer? max_length) { (Word) -> void } -> nil
+                    | (untyped sequences,
+                      ?Integer min_length,
+                      ?Integer? max_length) -> Enumerator[Word, void]
+    end
+  end
+end

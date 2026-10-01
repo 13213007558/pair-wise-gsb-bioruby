@@ -69,6 +69,8 @@ class Sequence
   autoload :Adapter, 'bio/sequence/adapter'
   autoload :QualityScore, 'bio/sequence/quality_score'
   autoload :SequenceMasker, 'bio/sequence/sequence_masker'
+  autoload :MinimalAbsentWordsIndex,
+           'bio/sequence/minimal_absent_words'
 
   #--
   # require "bio/sequence/compat.rb" here to avoid circular require and
@@ -98,6 +100,13 @@ class Sequence
   # *Returns*:: Bio::Sequence object
   def initialize(str)
     @seq = str
+  end
+
+  # Builds a Bio::Sequence::MinimalAbsentWordsIndex for this DNA sequence
+  # and enumerates minimal absent words within the requested length range.
+  def minimal_absent_words(min_length = 1, max_length = nil, &block)
+    MinimalAbsentWordsIndex.new(self)
+      .each(min_length, max_length, &block)
   end
 
   # Pass any unknown method calls to the wrapped sequence object.  see
@@ -474,4 +483,3 @@ end # Sequence
 
 
 end # Bio
-

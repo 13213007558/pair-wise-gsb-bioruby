@@ -27,6 +27,10 @@ module Bio
       def dna!: () -> String
       def rna: () -> String
       def rna!: () -> String
+      def minimal_absent_words: (?Integer min_length,
+                                ?Integer? max_length) { (MinimalAbsentWordsIndex::Word) -> void } -> nil
+                              | (?Integer min_length,
+                                ?Integer? max_length) -> Enumerator[MinimalAbsentWordsIndex::Word, void]
       def cut_with_enzyme: (*untyped args) -> untyped
       alias cut_with_enzymes cut_with_enzyme
 
