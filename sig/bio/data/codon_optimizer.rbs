@@ -1,0 +1,140 @@
+# Type signatures for Bio::CodonOptimizer
+
+module Bio
+  class CodonOptimizer
+    class Result
+      attr_accessor sequence: String?
+      attr_accessor score: Numeric?
+      attr_accessor gc_count: Integer?
+      attr_accessor conflicts: Array[Hash[Symbol, untyped]]
+
+      def feasible?: () -> bool
+    end
+
+    module Support
+      def self.conflict: (
+        String,
+        String,
+        **untyped
+      ) -> Hash[Symbol, untyped]
+      def self.gc_count: (String) -> Integer
+      def self.feasible: (Class, Hash[Symbol, untyped], bool) -> Result
+      def self.infeasible: (
+        Class,
+        Array[Hash[Symbol, untyped]]
+      ) -> Result
+    end
+
+    module Arguments
+      def self.weights: (
+        Hash[String, Numeric]?
+      ) -> Hash[String, Numeric]
+      def self.patterns: (Array[String]) -> Array[String]
+      def self.positions: (
+        Array[Integer | Range[Integer]]
+      ) -> Array[Integer]
+      def self.gc_range: (Range[Integer]?) -> Range[Integer]?
+    end
+
+    class Configuration
+      attr_reader gc_range: Range[Integer]?
+
+      def initialize: (
+        codon_table: (Integer | CodonTable),
+        codon_weights: Hash[String, Numeric],
+        forbidden_substrings: Array[String],
+        fixed_positions: Array[Integer],
+        gc_range: Range[Integer]?,
+        fix_start: bool,
+        fix_stop: bool
+      ) -> void
+
+      def choices_for: (String) -> Choices
+      def search: (Array[Array[String]]) -> Search
+      def gc_conflict: (Array[Array[String]]) -> Hash[Symbol, untyped]?
+    end
+
+    class Choices
+      def initialize: (
+        CodonTable,
+        String,
+        fixed_positions: Array[Integer],
+        fix_start: bool,
+        fix_stop: bool
+      ) -> void
+
+      def conflicts: () -> Array[Hash[Symbol, untyped]]
+      def lists: () -> Array[Array[String]]
+      def rna?: () -> bool
+      def build_conflicts: () -> Array[Hash[Symbol, untyped]]
+    end
+
+    class SequenceValidator
+      def initialize: (String, Array[Integer]) -> void
+      def conflicts: () -> Array[Hash[Symbol, untyped]]
+    end
+
+    class ChoiceBuilder
+      def initialize: (
+        CodonTable,
+        Array[String],
+        Array[Integer],
+        bool,
+        bool
+      ) -> void
+
+      def build: () -> Array[Array[String]]
+      def conflicts: () -> Array[Hash[Symbol, untyped]]
+    end
+
+    class Search
+      def initialize: (
+        Array[Array[String]],
+        Hash[String, Numeric],
+        Array[String],
+        Range[Integer]?
+      ) -> void
+
+      def run: () -> [Hash[Symbol, untyped]?, Hash[Symbol, untyped]?]
+    end
+
+    class StateTransition
+      def initialize: (
+        Hash[[String, Integer], Hash[Symbol, untyped]],
+        Array[String],
+        Hash[String, Numeric],
+        Array[String],
+        Integer
+      ) -> void
+
+      def next_states: () -> Hash[[String, Integer], Hash[Symbol, untyped]]
+    end
+
+    class StateSelector
+      def initialize: (
+        Hash[[String, Integer], Hash[Symbol, untyped]],
+        Range[Integer]?
+      ) -> void
+
+      def best: () -> [Hash[Symbol, untyped]?, Hash[Symbol, untyped]?]
+    end
+
+    def initialize: (
+      codon_table: (Integer | CodonTable),
+      ?codon_weights: Hash[String, Numeric]?,
+      ?forbidden_substrings: Array[String],
+      ?fixed_positions: Array[Integer | Range[Integer]],
+      ?gc_range: Range[Integer]?,
+      ?fix_start: bool,
+      ?fix_stop: bool
+    ) -> void
+
+    def optimize: (String) -> Result
+
+    def self.optimize: (
+      String,
+      codon_table: (Integer | CodonTable),
+      **untyped
+    ) -> Result
+  end
+end

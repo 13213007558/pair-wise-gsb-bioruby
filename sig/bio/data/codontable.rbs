@@ -1,0 +1,6 @@
+# Type signatures for Bio::CodonTable
+
+module Bio
+  class CodonTable
+  end
+end

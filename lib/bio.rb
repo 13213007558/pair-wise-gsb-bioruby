@@ -64,7 +64,8 @@ module Bio
   autoload :NucleicAcid,    'bio/data/na'
   autoload :AminoAcid,      'bio/data/aa'
   autoload :CodonTable,     'bio/data/codontable'
-
+  autoload :CodonOptimizer,
+           'bio/data/codon_optimizer'
 
   ### DB parsers
 
@@ -275,4 +276,3 @@ module Bio
   autoload :Command,        'bio/command'
 
 end
-
