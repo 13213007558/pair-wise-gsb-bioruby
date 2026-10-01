@@ -1,0 +1,37 @@
+# Type signatures for Bio::Sequence::MinimalAbsentWords
+
+module Bio
+  class Sequence
+    class MinimalAbsentWords
+      include Enumerable[Bio::Sequence::MinimalAbsentWords::Word]
+
+      class Occurrence < Struct[untyped]
+        attr_accessor record: untyped
+        attr_accessor record_id: String?
+        attr_accessor start: Integer
+        attr_accessor end_pos: Integer
+
+        def word: () -> String
+      end
+
+      class Word < Struct[untyped]
+        attr_accessor word: String
+        attr_accessor prefix_occurrence: Occurrence?
+        attr_accessor suffix_occurrence: Occurrence?
+
+        def length: () -> Integer
+        alias size length
+      end
+
+      DEFAULT_ALPHABET: String
+
+      attr_reader records: Array[untyped]
+      attr_reader alphabet: String
+
+      def initialize: (*untyped records, ?alphabet: String) -> void
+      def each: (?min_length: Integer, ?max_length: Integer?) ?{ (Word) -> void } -> untyped
+      def present?: (untyped word) -> bool
+      def minimal_absent?: (untyped word, ?min_length: Integer, ?max_length: Integer?) -> bool
+    end
+  end
+end

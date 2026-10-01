@@ -29,6 +29,8 @@ module Bio
       def rna!: () -> String
       def cut_with_enzyme: (*untyped args) -> untyped
       alias cut_with_enzymes cut_with_enzyme
+      def minimal_absent_words: (?min_length: Integer, ?max_length: Integer?) ?{ (Bio::Sequence::MinimalAbsentWords::Word) -> void } -> untyped
+      alias maw minimal_absent_words
 
       private
 

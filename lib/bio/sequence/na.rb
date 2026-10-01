@@ -532,6 +532,23 @@ class NA < String
   end
   alias cut_with_enzymes cut_with_enzyme
 
+  # Returns an Enumerator (or enumerates, when a block is given) of the
+  # minimal absent words of this nucleic acid sequence.  This is a shortcut
+  # for Bio::Sequence::MinimalAbsentWords.new(self).each(...); see that
+  # class for the semantics of non-ACGT characters, length limits and the
+  # yielded result objects.
+  # ---
+  # *Arguments*:
+  # * (optional keyword) _min_length_: Integer (default 1)
+  # * (optional keyword) _max_length_: Integer or nil (default nil)
+  # *Yields*:: Bio::Sequence::MinimalAbsentWords::Word
+  # *Returns*:: Enumerator when no block is given
+  def minimal_absent_words(min_length: 1, max_length: nil, &block)
+    Bio::Sequence::MinimalAbsentWords.new(self)
+      .each(min_length: min_length, max_length: max_length, &block)
+  end
+  alias maw minimal_absent_words
+
 end # NA
 
 end # Sequence

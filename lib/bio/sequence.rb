@@ -69,6 +69,7 @@ class Sequence
   autoload :Adapter, 'bio/sequence/adapter'
   autoload :QualityScore, 'bio/sequence/quality_score'
   autoload :SequenceMasker, 'bio/sequence/sequence_masker'
+  autoload :MinimalAbsentWords, 'bio/sequence/minimal_absent_words'
 
   #--
   # require "bio/sequence/compat.rb" here to avoid circular require and
