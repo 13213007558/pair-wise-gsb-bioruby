@@ -13,6 +13,8 @@ module Bio
       alias complement reverse_complement
       alias complement! reverse_complement!
       def translate: (?Integer frame, ?untyped table, ?String unknown) -> Bio::Sequence::AA
+      def optimize_codons: (?(Integer | Bio::CodonTable) table,
+                            **untyped options) -> Bio::CodonOptimizer::Result
       def codon_usage: () -> Hash[String, Integer]
       def gc_percent: () -> Integer
       def gc_content: () -> (Float | Rational)

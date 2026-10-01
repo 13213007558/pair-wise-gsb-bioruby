@@ -254,6 +254,11 @@ class NA < String
     return Bio::Sequence::AA.new(aaseq)
   end
 
+  # Exact synonymous codon optimization.  See Bio::CodonOptimizer.
+  def optimize_codons(table = 1, **options)
+    Bio::CodonOptimizer.optimize(self, table, **options)
+  end
+
   # Returns counts of each codon in the sequence in a hash.
   #
   #   s = Bio::Sequence::NA.new('atggcgtga')

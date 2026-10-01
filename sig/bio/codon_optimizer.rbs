@@ -1,0 +1,42 @@
+# Type signatures for Bio::CodonOptimizer
+
+module Bio
+  class CodonOptimizer
+    class Result
+      attr_accessor sequence: Bio::Sequence::NA?
+      attr_accessor score: Numeric?
+      attr_accessor gc_count: Integer?
+      attr_accessor conflicts: Array[Hash[String, untyped]]
+
+      def self.new: (?sequence: Bio::Sequence::NA?,
+                        ?score: Numeric?,
+                        ?gc_count: Integer?,
+                        ?conflicts: Array[Hash[String, untyped]]) -> Result
+      def feasible?: () -> bool
+    end
+
+    def self.optimize: (String sequence,
+                        (Integer | Bio::CodonTable) table,
+                        ?forbidden_substrings: (String | Array[String]),
+                        ?codon_weights: Hash[String, Numeric],
+                        ?fixed_positions: (Integer | Range[Integer] | Array[Integer | Range[Integer]])?,
+                        ?gc_count: Range[Integer]?,
+                        ?gc_range: Range[Integer]?,
+                        ?min_gc_count: Integer?,
+                        ?max_gc_count: Integer?,
+                        ?start_codon_strategy: Symbol,
+                        ?stop_codon_strategy: Symbol) -> Result
+
+    def initialize: ((Integer | Bio::CodonTable) table,
+                     ?forbidden_substrings: (String | Array[String]),
+                     ?codon_weights: Hash[String, Numeric],
+                     ?fixed_positions: (Integer | Range[Integer] | Array[Integer | Range[Integer]])?,
+                     ?gc_count: Range[Integer]?,
+                     ?gc_range: Range[Integer]?,
+                     ?min_gc_count: Integer?,
+                     ?max_gc_count: Integer?,
+                     ?start_codon_strategy: Symbol,
+                     ?stop_codon_strategy: Symbol) -> void
+    def optimize: (String sequence) -> Result
+  end
+end
