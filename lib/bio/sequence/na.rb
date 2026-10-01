@@ -51,6 +51,8 @@ class NA < String
 
   include Bio::Sequence::Common
 
+  autoload :Run, 'bio/sequence/na/run' unless const_defined?(:Run)
+
   # Generate an nucleic acid sequence object from a string.
   #
   #   s = Bio::Sequence::NA.new("aagcttggaccgttgaagt")
@@ -532,9 +534,23 @@ class NA < String
   end
   alias cut_with_enzymes cut_with_enzyme
 
+  # Returns all maximal tandem repeat runs (maximal substrings with a
+  # minimal period and exponent at least two) of the sequence.  IUPAC
+  # ambiguity codes are treated as repeat boundaries, runs may overlap,
+  # and coordinates are zero-based half-open intervals.
+  #
+  #   s = Bio::Sequence::NA.new('atataaa')
+  #   s.runs
+  #   # => [#<Bio::Sequence::NA::Run: [0, 5, 2]>,
+  #   #     #<Bio::Sequence::NA::Run: [4, 7, 1]>]
+  # ---
+  # *Returns*:: Array of Bio::Sequence::NA::Run objects
+  def runs
+    Run.find_all(self)
+  end
+
 end # NA
 
 end # Sequence
 
 end # Bio
-

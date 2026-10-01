@@ -5,6 +5,10 @@ module Bio
     class NA < String
       include Common
 
+      class Run
+        include Comparable
+      end
+
       def initialize: (String str) -> void
       def forward_complement: () -> String
       def forward_complement!: () -> String
@@ -27,6 +31,7 @@ module Bio
       def dna!: () -> String
       def rna: () -> String
       def rna!: () -> String
+      def runs: () -> Array[Run]
       def cut_with_enzyme: (*untyped args) -> untyped
       alias cut_with_enzymes cut_with_enzyme
 

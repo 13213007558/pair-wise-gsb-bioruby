@@ -1,0 +1,42 @@
+# Type signatures for Bio::Sequence::NA::Run
+
+module Bio
+  class Sequence
+    class NA < String
+      class Run
+        @start_position: Integer
+        @end_position: Integer
+        @period: Integer
+
+        attr_reader period: Integer
+        attr_reader start_position: Integer
+        attr_reader end_position: Integer
+
+        CONCRETE_BASE_BYTES: Array[Integer]
+        SEPARATOR: Integer
+
+        def initialize: (Integer start_position, Integer end_position, Integer period) -> void
+        def length: () -> Integer
+        def size: () -> Integer
+        def exponent: () -> Float
+        def to_a: () -> [Integer, Integer, Integer]
+        def ==: (untyped other) -> bool
+        def eql?: (untyped other) -> bool
+        def hash: () -> Integer
+        def inspect: () -> String
+        def self.find_all: (String | Array[Integer] sequence) -> Array[Run]
+
+        private
+
+        def self.concrete_lookup: () -> Array[bool]
+        def self.append_segment: (Array[Integer] bytes, Integer segment_start,
+          Integer segment_end, Array[Run] results) -> void
+        def self.maximal?: (Array[Integer] segment, Integer start, Integer finish,
+          Integer period, Integer length) -> bool
+        def self.find_candidates: (Array[Integer] data) -> Hash[[Integer, Integer], Integer]
+        def self.minimal_period: (Array[Integer] data) -> Integer
+        def self.z_function: (Array[Integer] data) -> Array[Integer]
+      end
+    end
+  end
+end
