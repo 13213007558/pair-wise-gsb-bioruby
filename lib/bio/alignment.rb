@@ -73,6 +73,9 @@ module Bio
   module Alignment
 
     autoload :MultiFastaFormat, 'bio/appl/mafft/report'
+    autoload :Graph,            'bio/alignment/graph'
+    autoload :GraphAlignment,   'bio/alignment/graph'
+    autoload :GraphAligner,     'bio/alignment/graph'
 
     # Bio::Alignment::PropertyMethods is a set of methods to treat
     # the gap character and so on.
@@ -2509,4 +2512,3 @@ module Bio
   end #module Alignment
 
 end #module Bio
-

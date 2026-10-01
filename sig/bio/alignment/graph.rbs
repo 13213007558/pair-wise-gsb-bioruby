@@ -1,0 +1,84 @@
+# Type signatures for Bio::Alignment::Graph, Bio::Alignment::GraphAlignment,
+# Bio::Alignment::GraphAligner and Bio::Alignment::GraphAlignerEngine
+
+module Bio
+  module Alignment
+    # Directed acyclic graph whose nodes are labeled with single
+    # characters. Nodes may be shared between branches.
+    class Graph
+      # Raised when the graph contains a cycle.
+      class CyclicError < ArgumentError
+      end
+
+      # A vertex of Bio::Alignment::Graph labeled with one character.
+      class Node
+        attr_reader char: String
+        attr_reader index: Integer
+        attr_reader predecessors: Array[Node]
+        attr_reader successors: Array[Node]
+
+        def initialize: (String char, Integer index) -> void
+        def to_s: () -> String
+        def inspect: () -> String
+      end
+
+      attr_reader nodes: Array[Node]
+
+      def initialize: () -> void
+      def add_node: (String char) -> Node
+      def add_edge: (Node from, Node to) -> self
+      def add_path: (String string) -> Array[Node]
+      def sources: () -> Array[Node]
+      def sinks: () -> Array[Node]
+      def topological_order: () -> Array[Node]
+      def each_path: () { (Array[Node] path) -> void } -> self
+                   | () -> Enumerator[Array[Node], self]
+      def path_strings: () -> Array[String]
+    end
+
+    # Result of aligning a sequence to a Bio::Alignment::Graph.
+    class GraphAlignment
+      attr_reader graph: Graph
+      attr_reader sequence: String
+      attr_reader mode: Symbol
+      attr_reader score: Numeric
+      attr_reader pairs: Array[[ Graph::Node?, Integer? ]]
+
+      def initialize: (Graph graph, String sequence, Symbol mode,
+                       Numeric score, Array[[ Graph::Node?, Integer? ]] pairs) -> void
+      def nodes: () -> Array[Graph::Node]
+      def sequence_begin: () -> Integer?
+      def sequence_end: () -> Integer?
+      def aligned_graph: () -> String
+      def aligned_sequence: () -> String
+      def to_s: () -> String
+    end
+
+    # Aligns a query sequence to a Bio::Alignment::Graph with a
+    # substitution score and affine gap costs, in global or local mode.
+    class GraphAligner
+      attr_reader match: Numeric
+      attr_reader mismatch: Numeric
+      attr_reader substitution: untyped
+      attr_reader gap_open: Numeric
+      attr_reader gap_extend: Numeric
+      attr_reader mode: Symbol
+
+      def initialize: (?match: Numeric, ?mismatch: Numeric, ?substitution: untyped,
+                       ?gap_open: Numeric, ?gap_extend: Numeric,
+                       ?mode: (Symbol | String)) -> void
+      def align: (String sequence, Graph graph) -> GraphAlignment
+      def substitution_score: (String char_a, String char_b) -> Numeric
+    end
+
+    # Internal dynamic-programming engine used by GraphAligner.
+    class GraphAlignerEngine
+      STATES: Array[Symbol]
+      NEGATIVE_INFINITY: Float
+      START: untyped
+
+      def initialize: (GraphAligner aligner, Graph graph, String sequence) -> void
+      def run: () -> GraphAlignment
+    end
+  end
+end
