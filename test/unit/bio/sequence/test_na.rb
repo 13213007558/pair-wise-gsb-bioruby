@@ -322,4 +322,91 @@ module Bio
       assert_equal('UPGF*', @obj.translate(1, seleno_ct))
     end
   end
+
+  class TestSequenceNARuns < Test::Unit::TestCase
+    def test_homogeneous_and_alternating_runs
+      assert_equal([[0, 6, 1]], Bio::Sequence::NA.new('aaaaaa').runs)
+      assert_equal([[0, 6, 2]], Bio::Sequence::NA.new('atatat').runs)
+    end
+
+    def test_overlapping_runs
+      assert_equal([[0, 5, 1], [4, 8, 2]],
+                   Bio::Sequence::NA.new('aaaaatat').runs)
+    end
+
+    def test_ambiguity_codes_are_boundaries
+      assert_equal([[1, 4, 1]],
+                   Bio::Sequence::NA.new('naaan').runs)
+      assert_equal([[1, 4, 1], [6, 9, 1]],
+                   Bio::Sequence::NA.new('naaanraaa').runs)
+      assert_equal([], Bio::Sequence::NA.new('anana').runs)
+    end
+
+    def test_rna_uses_u_as_a_concrete_base
+      assert_equal([[0, 3, 1]], Bio::Sequence::NA.new('uuun').runs)
+    end
+
+    def test_random_short_sequences_match_brute_force
+      random = Random.new(2_026_100_2)
+      40.times do
+        sequence = Array.new(18) { %w[a t g c].sample(random: random) }.join
+        assert_equal(brute_force_runs(sequence),
+                     Bio::Sequence::NA.new(sequence).runs,
+                     sequence)
+      end
+    end
+
+    def test_all_short_sequences_match_brute_force
+      %w[a t g].repeated_permutation(8) do |chars|
+        sequence = chars.join
+        assert_equal(brute_force_runs(sequence),
+                     Bio::Sequence::NA.new(sequence).runs,
+                     sequence)
+      end
+    end
+
+    def test_long_repetitive_sequences
+      homogeneous = Bio::Sequence::NA.new('a' * 5_000)
+      alternating = Bio::Sequence::NA.new(('at' * 2_500))
+
+      elapsed = Time.now
+      assert_equal([[0, 5_000, 1]], homogeneous.runs)
+      assert_equal([[0, 5_000, 2]], alternating.runs)
+      assert_operator(Time.now - elapsed, :<, 5.0)
+    end
+
+    private
+
+    def brute_force_runs(sequence)
+      concrete = %w[a t g c u]
+      runs = []
+      (0...sequence.length).each do |start|
+        ((start + 2)..sequence.length).each do |stop|
+          region = sequence[start...stop]
+          next unless region.chars.all? do |base|
+            concrete.include?(base)
+          end
+
+          period = (1..(region.length / 2)).find do |candidate|
+            region[candidate..-1] == region[0...-candidate]
+          end
+          next unless period
+
+          if start > 0 && concrete.include?(sequence[start - 1]) &&
+             start - 1 + period < stop &&
+             sequence[start - 1] == sequence[start - 1 + period]
+            next
+          end
+          if stop < sequence.length && concrete.include?(sequence[stop]) &&
+             stop - period >= start &&
+             sequence[stop] == sequence[stop - period]
+            next
+          end
+
+          runs << [start, stop, period]
+        end
+      end
+      runs.uniq.sort
+    end
+  end
 end

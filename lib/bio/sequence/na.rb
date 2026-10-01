@@ -278,6 +278,28 @@ class NA < String
     return hash
   end
 
+  # Returns all maximal tandem repeat runs in the sequence.
+  # Each run is represented as a half-open coordinate pair and its
+  # smallest period, <tt>[start, stop, period]</tt>. IUPAC ambiguity codes
+  # and other non-ATGC characters are non-matching boundaries. In RNA,
+  # U is treated as T.
+  #
+  #   s = Bio::Sequence::NA.new('xaaan')
+  #   s.runs                                  #=> [[1, 4, 1]]
+  #
+  # Overlapping runs with different minimal periods may be returned.
+  # ---
+  # *Returns*:: Array of Arrays of Fixnum
+  def runs
+    sequence = dna
+    tokens = run_tokens(sequence)
+    normal = suffix_structure(tokens)
+    reversed = suffix_structure([0] + tokens[1..-1].reverse)
+    factors = smallest_prime_factors(length)
+    runs = collect_divided_runs(normal, reversed, factors, length)
+    runs.uniq.sort
+  end
+
   # Calculate the ratio of GC / ATGC bases as a percentage rounded to 
   # the nearest whole number. U is regarded as T.
   #
@@ -516,6 +538,233 @@ class NA < String
   end
   protected :rna?
 
+  private
+
+  def run_tokens(sequence)
+    tokens = [0]
+    boundary = 0
+    sequence.each_char do |base|
+      if %w[a t g c].include?(base)
+        tokens << base.ord
+      else
+        boundary += 1
+        tokens << 256 + boundary
+      end
+    end
+    tokens
+  end
+
+  def suffix_structure(tokens)
+    suffix_array = build_suffix_array(tokens)
+    rank = Array.new(tokens.length)
+    suffix_array.each_with_index { |position, index| rank[position] = index }
+    lcp = build_lcp(tokens, suffix_array, rank)
+    {
+      :rank => rank,
+      :rmq => build_rmq(lcp)
+    }
+  end
+
+  def build_suffix_array(tokens)
+    size = tokens.length
+    suffix_array = counting_sort((0...size).to_a, tokens, tokens.max)
+    rank = compressed_tokens(tokens, suffix_array)
+    gap = 1
+    while rank[suffix_array.last] != size
+      second_rank = Array.new(size) do |position|
+        position + gap < size ? rank[position + gap] : 0
+      end
+      suffix_array = counting_sort((0...size).to_a, second_rank, size)
+      suffix_array = counting_sort(suffix_array, rank, size)
+      rank = compressed_pairs(rank, second_rank, suffix_array)
+      gap *= 2
+    end
+    suffix_array
+  end
+
+  def counting_sort(items, keys, max_key)
+    counts = Array.new(max_key + 1, 0)
+    items.each { |item| counts[keys[item]] += 1 }
+    total = 0
+    counts.each_index do |key|
+      count = counts[key]
+      counts[key] = total
+      total += count
+    end
+    sorted = Array.new(items.length)
+    items.each do |item|
+      key = keys[item]
+      sorted[counts[key]] = item
+      counts[key] += 1
+    end
+    sorted
+  end
+
+  def compressed_tokens(tokens, suffix_array)
+    rank = Array.new(tokens.length)
+    current_rank = 1
+    suffix_array.each_with_index do |position, index|
+      if index > 0 && tokens[position] != tokens[suffix_array[index - 1]]
+        current_rank += 1
+      end
+      rank[position] = current_rank
+    end
+    rank
+  end
+
+  def compressed_pairs(rank, second_rank, suffix_array)
+    new_rank = Array.new(rank.length)
+    current_rank = 1
+    suffix_array.each_with_index do |position, index|
+      if index > 0
+        previous = suffix_array[index - 1]
+        if rank[position] != rank[previous] ||
+           second_rank[position] != second_rank[previous]
+          current_rank += 1
+        end
+      end
+      new_rank[position] = current_rank
+    end
+    new_rank
+  end
+
+  def build_lcp(tokens, suffix_array, rank)
+    lcp = Array.new(tokens.length, 0)
+    match = 0
+    tokens.each_index do |position|
+      suffix_rank = rank[position]
+      next if suffix_rank.zero?
+      previous = suffix_array[suffix_rank - 1]
+      while position + match < tokens.length &&
+            previous + match < tokens.length &&
+            tokens[position + match] == tokens[previous + match]
+        match += 1
+      end
+      lcp[suffix_rank] = match
+      match -= 1 if match.positive?
+    end
+    lcp
+  end
+
+  def build_rmq(values)
+    levels = [values]
+    offset = 1
+    while offset < values.length
+      previous = levels.last
+      level = Array.new(values.length, values.length)
+      index = 0
+      while index < values.length - offset
+        level[index] = [previous[index], previous[index + offset]].min
+        index += 1
+      end
+      levels << level
+      offset *= 2
+    end
+    { :levels => levels }
+  end
+
+  def common_prefix(structure, left, right)
+    left = structure[:rank][left]
+    right = structure[:rank][right]
+    left, right = right, left if left > right
+    left += 1
+    rmq = structure[:rmq]
+    length = right - left + 1
+    level = length.bit_length - 1
+    row = rmq[:levels][level]
+    offset = 1 << level
+    [row[left], row[right - offset + 1]].min
+  end
+
+  def collect_divided_runs(normal, reversed, factors, size,
+                           range = (0...size), runs = [])
+    return runs if range.size < 2
+
+    left = range.begin
+    right = range.end
+    middle = (left + right) / 2
+    collect_divided_runs(normal, reversed, factors, size,
+                         (left...middle), runs)
+    collect_divided_runs(normal, reversed, factors, size,
+                         (middle...right), runs)
+
+    span = [middle - left, right - middle].min
+    1.upto(span) do |period|
+      add_tandem_run(normal, reversed, size, middle - period, middle,
+                     period, factors, runs)
+      if period < right - middle
+        add_tandem_run(normal, reversed, size, middle, middle + period,
+                       period, factors, runs)
+      end
+    end
+    runs
+  end
+
+  def add_tandem_run(normal, reversed, size, first, second, period,
+                     factors, runs)
+    right = common_prefix(normal, first + 1, second + 1)
+    left = if first.zero?
+             0
+           else
+             common_prefix(reversed,
+                           size - first + 1,
+                           size - second + 1)
+          end
+    start = first - left
+    stop = second + right
+    return unless stop - start >= 2 * period
+
+    period = minimal_period(normal, start, stop, period, factors)
+    runs << [start, stop, period]
+  end
+
+  def minimal_period(structure, start, stop, period, prime_factors)
+    factors = distinct_prime_factors(period, prime_factors)
+    reduced = true
+    while reduced
+      reduced = false
+      factors.each do |factor|
+        next unless (period % factor).zero?
+
+        candidate = period / factor
+        length = stop - start
+        match = common_prefix(structure, start + 1, start + candidate + 1)
+        next unless match >= length - candidate
+
+        period = candidate
+        reduced = true
+        break
+      end
+    end
+    period
+  end
+
+  def distinct_prime_factors(number, smallest_prime_factors)
+    factors = []
+    while number > 1
+      factor = smallest_prime_factors[number]
+      factors << factor
+      number /= factor while (number % factor).zero?
+    end
+    factors
+  end
+
+  def smallest_prime_factors(size)
+    factors = (0..size).to_a
+    factor = 2
+    while factor * factor <= size
+      if factors[factor] == factor
+        (factor * factor).step(size, factor) do |multiple|
+          factors[multiple] = factor if factors[multiple] == multiple
+        end
+      end
+      factor += 1
+    end
+    factors
+  end
+
+  public
+
   # Example:
   #
   #   seq = Bio::Sequence::NA.new('gaattc')
@@ -537,4 +786,3 @@ end # NA
 end # Sequence
 
 end # Bio
-

@@ -14,6 +14,7 @@ module Bio
       alias complement! reverse_complement!
       def translate: (?Integer frame, ?untyped table, ?String unknown) -> Bio::Sequence::AA
       def codon_usage: () -> Hash[String, Integer]
+      def runs: () -> Array[[Integer, Integer, Integer]]
       def gc_percent: () -> Integer
       def gc_content: () -> (Float | Rational)
       def at_content: () -> (Float | Rational)
