@@ -106,9 +106,11 @@ module Bio
 #   a[3].primary                        # => "g"
 #   a[3].complement                     # => "c"
 # 
-# = Todo / under development
-# 
-# * Circular DNA cutting
+# = Circular DNA and methylation
+#
+# For circular DNA (e.g. plasmids), recognition sites that cross the
+# origin, per-strand methylation, and caller-supplied enzyme
+# sensitivity rules, see Bio::RestrictionEnzyme::CircularAnalysis.
 #
 
 class RestrictionEnzyme
@@ -121,6 +123,7 @@ class RestrictionEnzyme
   autoload :SingleStrandComplement,  'bio/util/restriction_enzyme/single_strand_complement'
   autoload :DoubleStranded,          'bio/util/restriction_enzyme/double_stranded'
   autoload :Analysis,                'bio/util/restriction_enzyme/analysis'
+  autoload :CircularAnalysis,        'bio/util/restriction_enzyme/circular_analysis'
   autoload :Range,                   'bio/util/restriction_enzyme/range/sequence_range'
 
   autoload :SortedNumArray,          'bio/util/restriction_enzyme/sorted_num_array'
