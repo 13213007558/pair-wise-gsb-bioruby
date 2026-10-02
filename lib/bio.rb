@@ -56,6 +56,10 @@ module Bio
   ## Tree
   autoload :Tree, 'bio/tree'
 
+  ## Phylogenetics
+
+  autoload :Phylo,          'bio/phylo/likelihood'
+
   ## Map
   autoload :Map,            'bio/map'
 	
@@ -275,4 +279,3 @@ module Bio
   autoload :Command,        'bio/command'
 
 end
-
