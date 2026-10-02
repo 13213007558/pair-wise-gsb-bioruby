@@ -73,6 +73,7 @@ module Bio
   module Alignment
 
     autoload :MultiFastaFormat, 'bio/appl/mafft/report'
+    autoload :NeiGojobori, 'bio/alignment/nei_gojobori'
 
     # Bio::Alignment::PropertyMethods is a set of methods to treat
     # the gap character and so on.
@@ -1317,6 +1318,42 @@ module Bio
         self.each_seq { |s| i += 1 }
         i
       end
+
+      # Calculates Nei-Gojobori dN and dS for two sequences in this alignment.
+      # By default, the first two sequences are selected.
+      def nei_gojobori_dnds(seq1 = 0, seq2 = 1, options = {})
+        options = options.dup
+        options[:gap_regexp] ||= get_all_property[:gap_regexp]
+        unless options[:gap_regexp]
+          gap_characters = [gap_char, '-', '.'].uniq.join
+          options[:gap_regexp] = /[#{Regexp.escape(gap_characters)}]/
+        end
+        NeiGojobori.calculate(_nei_gojobori_sequence(seq1),
+                              _nei_gojobori_sequence(seq2), options)
+      end
+      alias dnds_nei_gojobori nei_gojobori_dnds
+      alias dnds_ng86 nei_gojobori_dnds
+
+      def _nei_gojobori_sequence(selector)
+        if is_a?(Array)
+          return selector unless selector.is_a?(Integer)
+
+          return self[selector]
+        end
+
+        if selector.is_a?(Integer)
+          sequences = []
+          each_seq { |sequence| sequences << sequence }
+          return sequences.fetch(selector)
+        end
+
+        if respond_to?(:has_key?) && has_key?(selector)
+          return self[selector]
+        end
+
+        selector
+      end
+      private :_nei_gojobori_sequence
 
       # Returns an array of sequence names.
       # The order of the names must be the same as

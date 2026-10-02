@@ -1,0 +1,46 @@
+module Bio
+  module Alignment
+    module EnumerableExtension
+      def nei_gojobori_dnds: (?Integer | String | Symbol | Bio::Sequence::NA seq1,
+                               ?Integer | String | Symbol | Bio::Sequence::NA seq2,
+                               ?Hash[Symbol, untyped] options) -> NeiGojobori::Result
+      alias dnds_nei_gojobori nei_gojobori_dnds
+      alias dnds_ng86 nei_gojobori_dnds
+    end
+
+    class NeiGojobori
+      class Result
+        attr_accessor status: Symbol
+        attr_accessor status_reasons: Array[Symbol]
+        attr_accessor nonsynonymous_sites: Float
+        attr_accessor synonymous_sites: Float
+        attr_accessor nonsynonymous_nucleotide_differences: Float
+        attr_accessor synonymous_nucleotide_differences: Float
+        attr_accessor dn: Float?
+        attr_accessor ds: Float?
+        attr_accessor omega: Float?
+        attr_accessor excluded_columns: Integer
+        attr_accessor excluded_gap_columns: Integer
+        attr_accessor excluded_ambiguous_codon_columns: Integer
+        attr_accessor excluded_stop_codon_columns: Integer
+        attr_accessor comparable_codon_columns: Integer
+      end
+
+      attr_reader codon_table: untyped
+      attr_reader gap_mode: Symbol
+      attr_reader ambiguous_codon_mode: Symbol
+      attr_reader stop_codon_mode: Symbol
+      attr_reader gap_regexp: Regexp
+
+      def self.calculate: (String | Bio::Sequence::NA, String | Bio::Sequence::NA, ?Hash[Symbol, untyped]) -> Result
+      def self.dnds: (String | Bio::Sequence::NA, String | Bio::Sequence::NA, ?Hash[Symbol, untyped]) -> Result
+
+      def initialize: (?codon_table: Integer | untyped,
+                        ?gap_mode: Symbol,
+                        ?ambiguous_codon_mode: Symbol,
+                        ?stop_codon_mode: Symbol,
+                        ?gap_regexp: Regexp?) -> void
+      def calculate: (String | Bio::Sequence::NA, String | Bio::Sequence::NA) -> Result
+    end
+  end
+end
