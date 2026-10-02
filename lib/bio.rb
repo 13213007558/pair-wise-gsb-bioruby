@@ -267,6 +267,7 @@ module Bio
   ### Utilities
 
   autoload :SiRNA,          'bio/util/sirna'
+  autoload :DeBruijnGraph,  'bio/util/debruijn_graph'
   autoload :ColorScheme,    'bio/util/color_scheme'
   autoload :ContingencyTable, 'bio/util/contingency_table'
   autoload :RestrictionEnzyme, 'bio/util/restriction_enzyme'
@@ -275,4 +276,3 @@ module Bio
   autoload :Command,        'bio/command'
 
 end
-
