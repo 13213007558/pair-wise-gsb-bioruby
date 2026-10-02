@@ -17,6 +17,7 @@ load Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 2,
 # libraries needed for the tests
 require 'test/unit'
 require 'bio/tree'
+require 'bio/db/newick'
 
 module Bio
   class TestTreeEdge < Test::Unit::TestCase
@@ -848,4 +849,106 @@ module Bio
       assert_equal('0.0845', format('%.4f', distance_node1_rodents))
     end
   end # class TestTree2
+
+  class TestTreeRobinsonFoulds < Test::Unit::TestCase
+    def newick(string)
+      Bio::Newick.new(string).tree
+    end
+
+    def test_unrooted_symmetric_difference_and_common_leaves
+      tree1 = newick('(((a,b),c),(d,e));')
+      tree2 = newick('(((a,c),b),(d,x));')
+      result = Bio::Tree.robinson_foulds(tree1, tree2)
+
+      assert_equal(2, result.distance)
+      assert_equal(%w[a b c d], result.common_leaves)
+      assert_equal([ [ %w[a b], %w[c d] ] ],
+                   result.only_in_tree1)
+      assert_equal([ [ %w[a c], %w[b d] ] ],
+                   result.only_in_tree2)
+    end
+
+    def test_rooted_returns_clades
+      tree1 = newick('(((a,b),c),(d,e));')
+      tree2 = newick('(((a,c),b),(d,x));')
+      result = tree1.robinson_foulds(tree2, rooted: true)
+
+      assert_equal(2, result.distance)
+      assert_equal([ %w[a b] ], result.only_in_tree1)
+      assert_equal([ %w[a c] ], result.only_in_tree2)
+    end
+
+    def test_unrooted_is_independent_of_display_root
+      tree1 = newick('(((a,b),c),(d,e));')
+      tree2 = newick('(e,(c,(a,b)),d);')
+
+      assert_equal(0, tree1.robinson_foulds(tree2).distance)
+      assert_equal(1, tree1.robinson_foulds(tree2, rooted: true).distance)
+    end
+
+    def test_equivalent_newick_representations_have_zero_distance
+      tree1 = newick('((a,b),(c,d));')
+      tree2 = newick('((d,c),(b,a));')
+
+      assert_equal(0, tree1.robinson_foulds(tree2).distance)
+      assert_equal(0, tree1.robinson_foulds(tree2, rooted: true).distance)
+    end
+
+    def test_branch_lengths_add_compressed_path_lengths
+      tree1 = newick('((a:0.1,b:0.2)x:0.3,' \
+                     '((c:0.4,d:0.7)u:0.5,e:0.8)w:0.2);')
+      tree2 = newick('((a:0.1,b:0.2)x:0.3,(c:0.4,d:0.7)u:0.2);')
+      result = tree1.robinson_foulds(tree2, branch_lengths: true)
+
+      assert_equal(0, result.distance)
+      assert_in_delta(0.5, result.branch_length_distance, 1e-12)
+      assert_nil(tree1.robinson_foulds(tree2).branch_length_distance)
+    end
+
+    def test_branch_lengths_add_successive_compressed_paths
+      tree1 = newick('(((((a,b)x,c)y,(d,z)p:0.3)q:0.4,f):0.2,e);')
+      tree2 = newick('((((a,b)x,c)y,d)q:0.5,f):0.2,e;')
+
+      result = tree1.robinson_foulds(tree2, branch_lengths: true)
+      assert_in_delta(0.1, result.branch_length_distance, 1e-12)
+    end
+
+    def test_branch_length_comparison_treats_missing_length_as_zero
+      tree1 = newick('((a:1,b:1)ab:1,(c:1,d:1)cd:1);')
+      tree2 = newick('((a:2,c)ac,(b,d)bd);')
+      result = tree1.robinson_foulds(tree2, true, true)
+
+      assert_equal(4, result.distance)
+      assert_in_delta(2.0, result.branch_length_distance, 1e-12)
+    end
+
+    def test_comparison_does_not_mutate_input_trees
+      tree1 = newick('(((a,b),c),(d,e));')
+      tree2 = newick('(((a,c),b),(d,x));')
+      expected_edges1 = tree1.number_of_edges
+      expected_edges2 = tree2.number_of_edges
+
+      tree1.robinson_foulds(tree2)
+
+      assert_equal(expected_edges1, tree1.number_of_edges)
+      assert_equal(expected_edges2, tree2.number_of_edges)
+    end
+
+    def test_duplicate_leaf_names_are_rejected
+      tree1 = newick('((a,b),c);')
+      tree2 = newick('((a,b),a);')
+
+      assert_raise(ArgumentError) { tree1.robinson_foulds(tree2) }
+    end
+
+    def test_no_common_leaves_has_zero_distance
+      tree1 = newick('((a,b),(c,d));')
+      tree2 = newick('((e,f),(g,h));')
+      result = tree1.robinson_foulds(tree2, branch_lengths: true)
+
+      assert_equal(0, result.distance)
+      assert_equal([], result.common_leaves)
+      assert_equal(0.0, result.branch_length_distance)
+    end
+  end
 end # module Bio

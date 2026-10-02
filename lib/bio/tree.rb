@@ -913,4 +913,4 @@ end #module Bio
 # temporary added
 #+++
 require 'bio/tree/output'
-
+require 'bio/tree/robinson_foulds'
