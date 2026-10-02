@@ -153,6 +153,13 @@ class NA < String
   # Alias for Bio::Sequence::NA#reverse_complement!
   alias complement! reverse_complement!
 
+  # Simulates PCR amplification with another primer.  See Bio::PCR for
+  # available options.
+  # ---
+  # *Returns*:: Array of Bio::PCR::Product objects
+  def pcr(forward_primer, reverse_primer, **options)
+    Bio::PCR.simulate(self, forward_primer, reverse_primer, **options)
+  end
 
   # Translate into an amino acid sequence.
   #   
@@ -537,4 +544,3 @@ end # NA
 end # Sequence
 
 end # Bio
-

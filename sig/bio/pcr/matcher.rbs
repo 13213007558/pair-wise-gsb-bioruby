@@ -1,0 +1,15 @@
+# Type signatures for Bio::PCR::Matcher
+
+module Bio
+  class PCR
+    module Matcher
+      def self?.positions: (String template, String primer,
+                            bool circular) -> (Range[Integer] | Array[untyped])
+      def self?.mismatches: (String template, String primer,
+                             Integer position, String strand) -> Array[Integer]
+      def self?.three_prime_count: (Array[Integer] mismatches, String primer,
+                                    Integer region) -> Integer
+      def self?.total_count: (Site forward, Site reverse) -> Integer
+    end
+  end
+end

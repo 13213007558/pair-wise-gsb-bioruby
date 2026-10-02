@@ -1,0 +1,17 @@
+# Type signatures for Bio::PCR::Options
+
+module Bio
+  class PCR
+    module Options
+      def self?.validate: (Integer max_mismatches, Integer? max_total,
+                           Integer three_prime_mismatches,
+                           Integer three_prime_region,
+                           Integer min_product_length,
+                           Integer? max_product_length) -> void
+      def self?.validate_sequences: (String template, String forward,
+                                    String reverse, bool circular,
+                                    Integer min_product_length,
+                                    Integer max_product_length) -> void
+    end
+  end
+end

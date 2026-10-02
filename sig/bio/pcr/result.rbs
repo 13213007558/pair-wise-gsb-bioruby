@@ -1,0 +1,32 @@
+# Type signatures for Bio::PCR result objects
+
+module Bio
+  class PCR
+    class Site < Struct[untyped]
+      attr_accessor primer: String
+      attr_accessor strand: String
+      attr_accessor five_prime_position: Integer
+      attr_accessor three_prime_position: Integer
+      attr_accessor mismatch_positions: Array[Integer]
+      attr_accessor mismatches: Integer
+
+      def initialize: (?String primer, ?String strand,
+                       ?Integer five_prime_position,
+                       ?Integer three_prime_position,
+                       ?Array[Integer] mismatch_positions,
+                       ?Integer mismatches) -> void
+    end
+
+    class Product < Struct[untyped]
+      attr_accessor sequence: Bio::Sequence::NA
+      attr_accessor forward_primer_site: Site
+      attr_accessor reverse_primer_site: Site
+
+      def initialize: (?Bio::Sequence::NA sequence, ?Site forward_primer_site,
+                       ?Site reverse_primer_site) -> void
+      def length: () -> Integer
+      def mismatch_positions: () -> Hash[Symbol, Array[Integer]]
+      def mismatches: () -> Hash[Symbol, Integer]
+    end
+  end
+end

@@ -1,0 +1,15 @@
+# Type signatures for Bio::PCR::Coordinates
+
+module Bio
+  class PCR
+    module Coordinates
+      def self?.site: (Integer position, String primer, String strand,
+                       Array[Integer] mismatches, Integer template_length,
+                       bool circular) -> Site
+      def self?.product_length: (Integer template_length, Site forward,
+                                Site reverse, bool circular) -> Integer
+      def self?.product_sequence: (String template, Site forward,
+                                  Integer length) -> Bio::Sequence::NA
+    end
+  end
+end

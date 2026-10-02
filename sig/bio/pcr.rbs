@@ -1,0 +1,17 @@
+# Type signatures for Bio::PCR
+
+module Bio
+  class PCR
+    def self.simulate: (untyped template, untyped forward_primer,
+                        untyped reverse_primer,
+                        **untyped options) -> Array[Product]
+    def initialize: (?circular: bool, ?max_mismatches: Integer,
+                     ?max_total_mismatches: Integer?,
+                     ?three_prime_mismatches: Integer,
+                     ?three_prime_region: Integer,
+                     ?min_product_length: Integer,
+                     ?max_product_length: Integer?) -> void
+    def simulate: (untyped template, untyped forward_primer,
+                   untyped reverse_primer) -> Array[Product]
+  end
+end

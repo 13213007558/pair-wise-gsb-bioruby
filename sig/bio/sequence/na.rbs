@@ -12,6 +12,8 @@ module Bio
       def reverse_complement!: () -> String
       alias complement reverse_complement
       alias complement! reverse_complement!
+      def pcr: (untyped forward_primer, untyped reverse_primer,
+                **untyped options) -> Array[Bio::PCR::Product]
       def translate: (?Integer frame, ?untyped table, ?String unknown) -> Bio::Sequence::AA
       def codon_usage: () -> Hash[String, Integer]
       def gc_percent: () -> Integer
