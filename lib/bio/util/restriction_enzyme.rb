@@ -121,6 +121,9 @@ class RestrictionEnzyme
   autoload :SingleStrandComplement,  'bio/util/restriction_enzyme/single_strand_complement'
   autoload :DoubleStranded,          'bio/util/restriction_enzyme/double_stranded'
   autoload :Analysis,                'bio/util/restriction_enzyme/analysis'
+  autoload :DigestRule,              'bio/util/restriction_enzyme/digest_rule'
+  autoload :DigestResult,            'bio/util/restriction_enzyme/digest_result'
+  autoload :Methylation,             'bio/util/restriction_enzyme/digest_rule'
   autoload :Range,                   'bio/util/restriction_enzyme/range/sequence_range'
 
   autoload :SortedNumArray,          'bio/util/restriction_enzyme/sorted_num_array'
@@ -172,6 +175,13 @@ class RestrictionEnzyme
   # See Bio::RestrictionEnzyme::Analysis.cut
   def self.cut( sequence, enzymes )
     Bio::RestrictionEnzyme::Analysis.cut( sequence, enzymes )
+  end
+
+  # Digest DNA with explicitly supplied enzyme rules and methylation state.
+  def self.digest(sequence, rules, circular: false, methylation: [], methylations: nil)
+    Analysis.digest(sequence, rules,
+                    circular: circular,
+                    methylation: methylations || methylation)
   end
 
   # A Bio::RestrictionEnzyme::Fragment is a DNA fragment composed of fused primary and 

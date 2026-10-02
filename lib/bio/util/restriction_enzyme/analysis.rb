@@ -18,6 +18,7 @@ class Analysis
   # require "analysis_basic.rb" here to avoid cyclic require
   #++
   require 'bio/util/restriction_enzyme/analysis_basic'
+  require 'bio/util/restriction_enzyme/analysis_digest'
 
   # See cut instance method
   def self.cut( sequence, *args )
