@@ -1,0 +1,21 @@
+module Bio
+  module Phylo
+    class JC69
+      @site_log_likelihoods: Array[Float]
+      @log_likelihood: Float
+
+      def self.calculate: (untyped tree, untyped alignment,
+                           ?Array[[Numeric, Numeric]] rate_categories) -> JC69
+      def self.log_likelihood: (untyped tree, untyped alignment,
+                                ?Array[[Numeric, Numeric]] rate_categories) -> Float
+      def self.site_log_likelihoods: (untyped tree, untyped alignment,
+                                     ?Array[[Numeric, Numeric]] rate_categories) -> Array[Float]
+
+      attr_reader site_log_likelihoods: Array[Float]
+
+      def initialize: (untyped tree, untyped alignment,
+                      ?Array[[Numeric, Numeric]] rate_categories) -> void
+      def log_likelihood: () -> Float
+    end
+  end
+end

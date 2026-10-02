@@ -56,6 +56,11 @@ module Bio
   ## Tree
   autoload :Tree, 'bio/tree'
 
+  ## Phylogenetic likelihood models
+  module Phylo
+    autoload :JC69, 'bio/phylo/jc69'
+  end
+
   ## Map
   autoload :Map,            'bio/map'
 	
