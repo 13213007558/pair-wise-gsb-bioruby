@@ -53,6 +53,10 @@ module Bio
 
   autoload :Alignment,      'bio/alignment'
 
+  ## Assembly
+
+  autoload :Assembly,       'bio/assembly'
+
   ## Tree
   autoload :Tree, 'bio/tree'
 
@@ -275,4 +279,3 @@ module Bio
   autoload :Command,        'bio/command'
 
 end
-

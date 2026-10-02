@@ -1,0 +1,51 @@
+# Type signatures for Bio::Assembly
+
+module Bio
+  module Assembly
+    class DeBruijnGraph
+      attr_reader k: Integer
+      attr_reader kmer_counts: Hash[String, Integer]
+      attr_reader edge_counts: Hash[String, Integer]
+
+      def self.build: (Array[String] reads, Integer k) -> DeBruijnGraph
+      def self.from_reads: (Array[String] reads, Integer k) -> DeBruijnGraph
+      def initialize: (Integer k, Array[String]? reads) -> void
+      def add_read: (String read) -> DeBruijnGraph
+      def unitigs: () -> Array[Unitig]
+      def outgoing_states: ([String, String] state) -> Array[[String, String]]
+      def incoming_states: ([String, String] state) -> Array[[String, String]]
+      def canonical_kmer: (String kmer) -> String
+    end
+
+    class Unitig
+      attr_reader sequence: String
+      attr_reader kmer_counts: Array[Integer]
+      attr_reader edge_counts: Array[Integer]
+      attr_reader k: Integer
+      attr_reader start_kmer: String
+      attr_reader end_kmer: String
+      attr_reader start_node: String
+      attr_reader end_node: String
+      attr_reader start_orientation: String
+      attr_reader end_orientation: String
+
+      def initialize: (String sequence,
+                       Array[[String, String]] states,
+                       Array[Integer] edge_counts,
+                       Hash[String, Integer] kmer_counts,
+                       Integer k,
+                       ?circular: bool) -> void
+      def circular?: () -> bool
+      def mean_kmer_coverage: () -> Rational
+      def mean_edge_coverage: () -> Rational
+      def coverage: () -> Float
+      def unitig_key: () -> Array[untyped]
+      def ==: (untyped other) -> bool
+      def hash: () -> Integer
+      def to_s: () -> String
+    end
+
+    def self.unitigs: (Array[String] reads, Integer k) -> Array[Unitig]
+    def self.build_unitigs: (Array[String] reads, Integer k) -> Array[Unitig]
+  end
+end
