@@ -53,6 +53,11 @@ module Bio
 
   autoload :Alignment,      'bio/alignment'
 
+  ## Genome rearrangements
+
+  autoload :DCJ,             'bio/dcj'
+  autoload :DoubleCutAndJoin, 'bio/dcj'
+
   ## Tree
   autoload :Tree, 'bio/tree'
 
@@ -275,4 +280,3 @@ module Bio
   autoload :Command,        'bio/command'
 
 end
-

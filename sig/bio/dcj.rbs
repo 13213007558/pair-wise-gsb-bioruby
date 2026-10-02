@@ -1,0 +1,81 @@
+# Type signatures for Bio::DCJ genome rearrangement classes
+
+module Bio
+  class DCJ
+    type block_id = Integer | String
+    type signed_block_value = Integer | String | SignedBlock
+    type chromosome_value = Array[signed_block_value] | untyped
+
+    TAIL: Symbol
+    HEAD: Symbol
+
+    class SignedBlock
+      attr_accessor id: block_id
+      attr_accessor orientation: Integer
+
+      def initialize: (id: block_id, orientation: Integer) -> void
+    end
+
+    class ChromosomeSpec
+      attr_accessor blocks: Array[SignedBlock]
+      attr_accessor circular: bool
+
+      def initialize: (blocks: Array[SignedBlock], circular: bool) -> void
+    end
+
+    class Genome
+      include Enumerable[ChromosomeSpec]
+
+      attr_reader chromosomes: Array[ChromosomeSpec]
+      attr_reader blocks: Array[block_id]
+
+      def self.[]: (*chromosome_value) -> Genome
+      def self.from_adjacencies: (untyped) -> Genome
+
+      def initialize: (Array[chromosome_value] chromosomes,
+                       ?blocks: Array[block_id]?,
+                       ?adjacencies: untyped?) -> void
+
+      def each: () { (ChromosomeSpec) -> void } -> self
+      def size: () -> Integer
+      def linear: () -> Array[ChromosomeSpec]
+      def circular: () -> Array[ChromosomeSpec]
+      def adjacencies: () -> Array[Array[untyped]]
+      def block_ids: () -> Array[block_id]
+      def to_a: () -> Array[untyped]
+      def apply: (untyped) -> Genome
+      def distance_to: (untyped) -> Integer
+      def shortest_sorting_operations: (untyped) -> Array[Operation]
+      def shortest_path: (untyped) -> Array[Operation]
+      def ==: (untyped) -> bool
+      def eql?: (untyped) -> bool
+      def hash: () -> Integer
+    end
+
+    class Operation
+      attr_reader cuts: Array[Array[untyped]]
+      attr_reader joins: Array[Array[untyped]]
+
+      def initialize: (untyped cuts, untyped joins) -> void
+      def cut: () -> Array[Array[untyped]]
+      def join: () -> Array[Array[untyped]]
+      def to_h: () -> { cuts: Array[Array[untyped]],
+                        joins: Array[Array[untyped]] }
+      def ==: (untyped) -> bool
+      def eql?: (untyped) -> bool
+      def hash: () -> Integer
+    end
+
+    def self.[]: (*chromosome_value) -> Genome
+    def self.genome: (untyped) -> Genome
+    def self.operation: (untyped, untyped) -> Operation
+    def self.distance: (untyped, untyped) -> Integer
+    def self.apply: (untyped, untyped) -> Genome
+    def self.shortest_sorting_operations: (untyped, untyped) -> Array[Operation]
+    def self.coerce_genome: (untyped) -> Genome
+    def self.coerce_chromosome: (untyped) -> ChromosomeSpec
+    def self.public_block: (SignedBlock) -> block_id
+  end
+
+  DoubleCutAndJoin: singleton(DCJ)
+end
