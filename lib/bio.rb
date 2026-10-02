@@ -269,10 +269,10 @@ module Bio
   autoload :SiRNA,          'bio/util/sirna'
   autoload :ColorScheme,    'bio/util/color_scheme'
   autoload :ContingencyTable, 'bio/util/contingency_table'
+  autoload :DCJ,            'bio/dcj'
   autoload :RestrictionEnzyme, 'bio/util/restriction_enzyme'
 
   ### Service libraries
   autoload :Command,        'bio/command'
 
 end
-

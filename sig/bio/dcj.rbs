@@ -1,0 +1,54 @@
+module Bio
+  module DCJ
+    type adjacency = [Endpoint, Endpoint]
+    type genome_like = Genome | Array[Chromosome | Array[Integer] | Hash[Symbol, untyped]]
+
+    class Endpoint
+      include Comparable
+
+      attr_accessor block: Integer
+      attr_accessor side: Symbol
+
+      def initialize: (Integer block, Symbol side) -> void
+      def <=>: (untyped other) -> Integer?
+    end
+
+    class Chromosome
+      attr_accessor blocks: Array[Integer]
+      attr_accessor circular: bool
+
+      def initialize: (Array[Integer] blocks, bool circular) -> void
+    end
+
+    class Operation
+      attr_accessor cuts: Array[adjacency]
+      attr_accessor joins: Array[adjacency]
+
+      def initialize: (Array[adjacency] cuts, Array[adjacency] joins) -> void
+    end
+
+    class Genome
+      attr_reader chromosomes: Array[Chromosome]
+      attr_reader adjacencies: Set[adjacency]
+      attr_reader block_ids: Array[Integer]
+      attr_reader endpoint_adjacencies: Array[adjacency]
+      attr_reader telomeres: Array[Endpoint]
+
+      def initialize: (
+        Array[Chromosome | Array[Integer] | Hash[Symbol, untyped]] chromosomes
+      ) -> void
+      def apply: (Operation operation) -> Genome
+      def self.from_adjacencies: (
+        Set[adjacency] | Array[adjacency] adjacencies,
+        Array[Integer] block_ids
+      ) -> Genome
+      def ==: (untyped other) -> bool
+      def eql?: (untyped other) -> bool
+      def hash: () -> Integer
+    end
+
+    def self.distance: (genome_like source, genome_like target) -> Integer
+    def self.scenario: (genome_like source, genome_like target) -> Array[Operation]
+    def self.validate_pair: (Genome source, Genome target) -> void
+  end
+end
