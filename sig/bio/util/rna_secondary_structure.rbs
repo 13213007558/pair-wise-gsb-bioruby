@@ -1,0 +1,92 @@
+# Type signatures for Bio::RNASecondaryStructure
+
+module Bio
+  # Weighted Nussinov-style RNA secondary structure prediction with
+  # forced pairs, forbidden pairs and a minimum hairpin loop length.
+  class RNASecondaryStructure
+    # Error raised when the given constraints contradict each other.
+    class ConstraintConflictError < ArgumentError
+      attr_reader constraints: Array[String]
+
+      def initialize: (Array[String] constraints, ?String? reason) -> void
+    end
+
+    # The outcome of a folding run.
+    class Result
+      attr_reader score: Numeric?
+
+      attr_reader pairs: Array[[Integer, Integer]]?
+
+      attr_reader dot_bracket: String?
+
+      attr_reader count: Integer
+
+      def initialize: (score: Numeric?,
+                       pairs: Array[[Integer, Integer]]?,
+                       count: Integer, length: Integer) -> void
+
+      def feasible?: () -> bool
+
+      def to_s: () -> String
+
+      def self.build_dot_bracket: (Array[[Integer, Integer]] pairs,
+                                   Integer length) -> String
+    end
+
+    CANONICAL_PAIRS: Hash[String, Array[String]]
+
+    DEFAULT_PAIR_ALLOWED: ^(Integer i, Integer j, String sequence) -> bool
+
+    DEFAULT_SCORE: ^(Integer i, Integer j, String sequence) -> Integer
+
+    attr_reader sequence: String
+
+    attr_reader min_loop: Integer
+
+    attr_reader forced: Array[[Integer, Integer]]
+
+    attr_reader forbidden: Array[[Integer, Integer]]
+
+    def initialize: (String sequence, ?min_loop: Integer,
+                     ?forced: Array[[Integer, Integer]],
+                     ?forbidden: Array[[Integer, Integer]],
+                     ?pair_allowed: ^(Integer, Integer, String) -> boolish,
+                     ?score: ^(Integer, Integer, String) -> Numeric) -> void
+
+    def fold: () -> Result
+
+    def self.fold: (String sequence, **untyped options) -> Result
+
+    def each_structure: () { (Array[[Integer, Integer]] pairs) -> void } -> self
+                      | () -> Enumerator[Array[[Integer, Integer]], self]
+
+    private
+
+    def normalize_pairs: (Array[[Integer, Integer]] pairs,
+                          String kind) -> Array[[Integer, Integer]]
+
+    def validate_constraints!: () -> void
+
+    def pair_allowed?: (Integer i, Integer j) -> bool
+
+    def pair_score: (Integer i, Integer j) -> Numeric
+
+    def infeasible_interval?: (Integer i, Integer j) -> bool
+
+    def feasible_value?: (Numeric value) -> bool
+
+    def w_at: (Integer i, Integer j) -> Numeric
+
+    def c_at: (Integer i, Integer j) -> Integer
+
+    def compute_dp: () -> void
+
+    def compute_cell: (Integer i, Integer j) -> void
+
+    def traceback_interval: (Integer i, Integer j,
+                             Array[[Integer, Integer]] pairs) -> void
+
+    def enumerate_interval: (Integer i, Integer j)
+                              { (Array[[Integer, Integer]]) -> void } -> void
+  end
+end
