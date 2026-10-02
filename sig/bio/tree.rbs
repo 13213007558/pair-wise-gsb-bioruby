@@ -1,0 +1,48 @@
+# Type signatures for Bio::Tree
+
+module Bio
+  class Tree
+    class NoPathError < RuntimeError
+    end
+
+    class Split
+      include Comparable
+
+      attr_reader labels: Array[String]
+      attr_reader edge: untyped
+      attr_reader distance: Numeric?
+
+      def initialize: (untyped labels, ?untyped edge) -> void
+      def <=>: (untyped) -> Integer?
+      def ==: (untyped) -> bool
+      def hash: () -> Integer
+      def to_a: () -> Array[String]
+      def inspect: () -> String
+    end
+
+    class RobinsonFoulds
+      attr_reader tree1: Tree
+      attr_reader tree2: Tree
+      attr_reader common_leaves: Array[String]
+      attr_reader splits1: Array[Split]
+      attr_reader splits2: Array[Split]
+      attr_reader first_tree_splits: Array[Split]
+      attr_reader second_tree_splits: Array[Split]
+      attr_reader distance: Integer
+      attr_reader branch_length_differences: Hash[Split, Numeric]?
+      attr_reader branch_length_distance: Numeric?
+
+      def initialize: (Tree tree1,
+                       Tree tree2,
+                       ?rooted: bool,
+                       ?branch_length: bool) -> void
+    end
+
+    def robinson_foulds: (Tree other,
+                         ?rooted: bool,
+                         ?branch_length: bool) -> RobinsonFoulds
+    def robinson_foulds_distance: (Tree other,
+                                  ?bool rooted,
+                                  ?bool branch_length) -> (Integer | Numeric)
+  end
+end

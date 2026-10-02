@@ -24,6 +24,276 @@ module Bio
     # Error when there are no path between specified nodes
     class NoPathError < RuntimeError; end
 
+    # A split (bipartition) or rooted clade shared by a set of leaves.
+    class Split
+      include Comparable
+
+      # Creates a new split from leaf labels.
+      def initialize(labels, edge = nil)
+        @labels = labels.to_a.uniq.sort.freeze
+        @edge = edge
+        @distance = edge && edge.respond_to?(:distance) ? edge.distance : nil
+      end
+
+      # Labels on this side of the split.
+      attr_reader :labels
+
+      # Edge represented by this split, if available.
+      attr_reader :edge
+
+      # Branch length of the represented edge.
+      attr_reader :distance
+
+      # Compares two splits by their leaf labels.
+      def <=>(other)
+        return nil unless other.is_a?(self.class)
+
+        labels <=> other.labels
+      end
+
+      # Checks whether two splits contain the same leaf labels.
+      def ==(other)
+        other.is_a?(self.class) && labels == other.labels
+      end
+      alias eql? ==
+
+      # Hash value compatible with eql?.
+      def hash
+        labels.hash
+      end
+
+      # Returns the labels as an array.
+      def to_a
+        labels.dup
+      end
+
+      # Readable representation of the split.
+      def inspect
+        "#<#{self.class}: #{labels.inspect}>"
+      end
+    end
+
+    # Robinson–Foulds distance between two phylogenetic trees.
+    class RobinsonFoulds
+      # Creates a new comparison and restricts both trees to their common,
+      # uniquely named leaves.
+      def initialize(tree1, tree2, rooted: false, branch_length: false)
+        @tree1 = tree1
+        @tree2 = tree2
+        @rooted = rooted
+        @branch_length = branch_length
+
+        @leaf_nodes1 = named_leaves(tree1)
+        @leaf_nodes2 = named_leaves(tree2)
+        leaves1 = @leaf_nodes1
+        leaves2 = @leaf_nodes2
+        names1 = leaves1.keys
+        names2 = leaves2.keys
+        @common_leaves = (names1 & names2).sort
+        if @common_leaves.size < 2
+          raise ArgumentError, 'trees must share at least two named leaves'
+        end
+
+        analysis1 = analyze(tree1)
+        analysis2 = analyze(tree2)
+        @splits1 = analysis1[:splits]
+        @splits2 = analysis2[:splits]
+        @first_tree_splits = (@splits1 - @splits2).sort
+        @second_tree_splits = (@splits2 - @splits1).sort
+        @distance = @first_tree_splits.size + @second_tree_splits.size
+
+        calculate_branch_lengths if branch_length
+      end
+
+      # First tree in the comparison.
+      attr_reader :tree1
+
+      # Second tree in the comparison.
+      attr_reader :tree2
+
+      # Sorted names of leaves shared by both trees.
+      attr_reader :common_leaves
+
+      # Splits found in the first tree.
+      attr_reader :splits1
+
+      # Splits found in the second tree.
+      attr_reader :splits2
+
+      # Splits found only in the first tree.
+      attr_reader :first_tree_splits
+
+      # Splits found only in the second tree.
+      attr_reader :second_tree_splits
+
+      # Symmetric-difference Robinson–Foulds distance.
+      attr_reader :distance
+
+      # Absolute branch-length differences for splits shared by both trees.
+      attr_reader :branch_length_differences
+
+      # Sum of branch lengths over symmetric-difference splits.
+      attr_reader :branch_length_distance
+
+      private
+
+      def named_leaves(tree)
+        raise ArgumentError, 'rooted comparison requires tree.root' if
+          @rooted && tree.root.nil?
+
+        leaves = tree.nodes.find_all do |node|
+          tree.out_degree(node) == 1
+        end
+        named = {}
+        leaves.each do |node|
+          name = tree.get_node_name(node).to_s
+          next if name.empty? && node == tree.root
+          if name.empty?
+            raise ArgumentError, 'all leaves must have non-empty names'
+          end
+          if named.key?(name)
+            raise ArgumentError, "duplicate leaf name: #{name}"
+          end
+          named[name] = node
+        end
+        named
+      end
+
+      def analyze(tree)
+        leaf_nodes = tree.equal?(@tree1) ? @leaf_nodes1 : @leaf_nodes2
+        selected = @common_leaves.map { |name| leaf_nodes.fetch(name) }
+        induced = tree.subtree_with_all_paths(selected)
+        adjacency = build_adjacency(induced)
+        root = @rooted ? rooted_anchor(tree, adjacency) : nil
+        contract_degree_two(tree, adjacency, root)
+        splits = @rooted ? rooted_splits(tree, adjacency, root) :
+                           unrooted_splits(tree, adjacency)
+        { root: root, adjacency: adjacency, splits: splits }
+      end
+
+      def build_adjacency(tree)
+        adjacency = Hash.new { |hash, node| hash[node] = [] }
+        tree.edges.each do |node1, node2, edge|
+          adjacency[node1] << [node2, edge]
+          adjacency[node2] << [node1, edge]
+        end
+        adjacency
+      end
+
+      def rooted_anchor(tree, adjacency)
+        root = tree.root
+        raise ArgumentError, 'rooted comparison requires tree.root' unless root
+        return root if adjacency.key?(root)
+
+        target = adjacency.keys.first
+        tree.path(root, target).find { |node| adjacency.key?(node) }
+      end
+
+      def contract_degree_two(tree, adjacency, root)
+        pending = adjacency.keys.select do |node|
+          adjacency[node].size == 2 && node != root
+        end
+        until pending.empty?
+          node = pending.shift
+          next unless adjacency.key?(node)
+          neighbors = adjacency[node]
+          next unless neighbors && neighbors.size == 2
+
+          node1, edge1 = neighbors[0]
+          node2, edge2 = neighbors[1]
+          merged_edge = tree.get_edge_merged(edge1, edge2)
+          adjacency[node1].delete_if { |other, _| other == node }
+          adjacency[node2].delete_if { |other, _| other == node }
+          adjacency.delete(node)
+          adjacency[node1] << [node2, merged_edge]
+          adjacency[node2] << [node1, merged_edge]
+          [node1, node2].each do |neighbor|
+            if adjacency[neighbor].size == 2 && neighbor != root
+              pending << neighbor unless pending.include?(neighbor)
+            end
+          end
+        end
+      end
+
+      def rooted_splits(tree, adjacency, root)
+        splits = []
+        collect_rooted_splits(tree, adjacency, root, nil, nil, splits)
+        splits
+      end
+
+      def collect_rooted_splits(tree, adjacency, node, parent, edge, splits)
+        children = adjacency[node].reject { |child, _| child == parent }
+        name = tree.get_node_name(node).to_s
+        is_leaf = adjacency[node].size == 1 && @common_leaves.include?(name)
+        own_labels = is_leaf ? [name] : []
+        child_labels = children.flat_map do |child, child_edge|
+          collect_rooted_splits(tree, adjacency, child, node,
+                                child_edge, splits)
+        end
+        labels = (own_labels + child_labels).sort
+        if edge && labels.size >= 2 && labels.size < @common_leaves.size
+          splits << Split.new(labels, edge)
+        end
+        labels
+      end
+
+      def unrooted_splits(tree, adjacency)
+        splits = []
+        visited = {}
+        adjacency.each do |node1, neighbors|
+          neighbors.each do |node2, edge|
+            key = [node1.object_id, node2.object_id].sort
+            next if visited[key]
+            visited[key] = true
+
+            side = component_labels(tree, adjacency, node1, node2)
+            other = @common_leaves - side
+            next unless side.size.between?(2, @common_leaves.size - 2)
+            side = other if (other <=> side) < 0
+            splits << Split.new(side, edge)
+          end
+        end
+        splits
+      end
+
+      def component_labels(tree, adjacency, start, blocked)
+        pending = [start]
+        visited = { blocked => true, start => true }
+        labels = []
+        until pending.empty?
+          node = pending.shift
+          name = tree.get_node_name(node).to_s
+          labels << name if @common_leaves.include?(name)
+          adjacency[node].each do |neighbor, _|
+            next if visited[neighbor]
+            visited[neighbor] = true
+            pending << neighbor
+          end
+        end
+        labels.sort
+      end
+
+      def calculate_branch_lengths
+        lengths1 = split_lengths(@splits1)
+        lengths2 = split_lengths(@splits2)
+        @branch_length_differences = {}
+        (@splits1 & @splits2).each do |split|
+          @branch_length_differences[split] =
+            (lengths1.fetch(split, 0.0) - lengths2.fetch(split, 0.0)).abs
+        end
+        @branch_length_distance =
+          (@splits1 | @splits2).sum do |split|
+            (lengths1.fetch(split, 0.0) - lengths2.fetch(split, 0.0)).abs
+          end
+      end
+
+      def split_lengths(splits)
+        splits.each_with_object({}) do |split, lengths|
+          lengths[split] = split.distance || 0.0
+        end
+      end
+    end
+
     # Edge object of each node.
     # By default, the object doesn't contain any node information.
     class Edge
@@ -906,6 +1176,29 @@ module Bio
       self.add_edge(new_node, node2, edge)
       self
     end
+
+    # Compares this tree with another tree by Robinson–Foulds distance.
+    # Trees are first restricted to their uniquely named common leaves.
+    # Set rooted: true for rooted (clade) comparison; the default is
+    # unrooted (bipartition) comparison.
+    # Set branch_length: true to also compare branch lengths.
+    def robinson_foulds(other, rooted: false, branch_length: false)
+      RobinsonFoulds.new(self, other,
+                         rooted: rooted,
+                         branch_length: branch_length)
+    end
+
+    # Returns the Robinson–Foulds distance from another tree.
+    def robinson_foulds_distance(other, rooted = false, branch_length = false)
+      comparison = robinson_foulds(other,
+                                   rooted: rooted,
+                                   branch_length: branch_length)
+      if branch_length
+        comparison.branch_length_distance
+      else
+        comparison.distance
+      end
+    end
   end #class Tree
 end #module Bio
 
@@ -913,4 +1206,3 @@ end #module Bio
 # temporary added
 #+++
 require 'bio/tree/output'
-
