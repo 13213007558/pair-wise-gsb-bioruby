@@ -23,4 +23,4 @@ require 'bio/db/pdb/residue'
 require 'bio/db/pdb/chain'
 require 'bio/db/pdb/model'
 require 'bio/db/pdb/pdb'
-
+require 'bio/db/pdb/dssp'

@@ -1,0 +1,54 @@
+HEADER    IDEALIZED ALPHA-HELIX BACKBONE MODEL FRAGMENT
+REMARK    IDEALIZED MODEL FRAGMENT (POLY-ALA, PHI=-57 PSI=-47) GENERATED
+REMARK    FOR BIORUBY TESTS. EXPECTED DSSP-STYLE ASSIGNMENT:
+REMARK    ' HHHHHHHHHH '
+ATOM      1 N    ALA A   1       0.000   0.000   0.000  1.00 20.00           N  
+ATOM      2 CA   ALA A   1       1.458   0.000   0.000  1.00 20.00           C  
+ATOM      3 C    ALA A   1       2.009   1.422   0.000  1.00 20.00           C  
+ATOM      4 O    ALA A   1       2.910   1.743   0.776  1.00 20.00           O  
+ATOM      5 N    ALA A   2       1.463   2.263  -0.872  1.00 20.00           N  
+ATOM      6 CA   ALA A   2       1.899   3.650  -0.974  1.00 20.00           C  
+ATOM      7 C    ALA A   2       1.768   4.370   0.364  1.00 20.00           C  
+ATOM      8 O    ALA A   2       2.693   5.057   0.797  1.00 20.00           O  
+ATOM      9 N    ALA A   3       0.618   4.205   1.008  1.00 20.00           N  
+ATOM     10 CA   ALA A   3       0.364   4.838   2.297  1.00 20.00           C  
+ATOM     11 C    ALA A   3       1.421   4.443   3.323  1.00 20.00           C  
+ATOM     12 O    ALA A   3       1.958   5.298   4.027  1.00 20.00           O  
+ATOM     13 N    ALA A   4       1.711   3.149   3.398  1.00 20.00           N  
+ATOM     14 CA   ALA A   4       2.704   2.639   4.337  1.00 20.00           C  
+ATOM     15 C    ALA A   4       4.057   3.309   4.126  1.00 20.00           C  
+ATOM     16 O    ALA A   4       4.696   3.743   5.085  1.00 20.00           O  
+ATOM     17 N    ALA A   5       4.484   3.388   2.870  1.00 20.00           N  
+ATOM     18 CA   ALA A   5       5.761   4.005   2.531  1.00 20.00           C  
+ATOM     19 C    ALA A   5       5.830   5.442   3.035  1.00 20.00           C  
+ATOM     20 O    ALA A   5       6.823   5.846   3.640  1.00 20.00           O  
+ATOM     21 N    ALA A   6       4.771   6.204   2.781  1.00 20.00           N  
+ATOM     22 CA   ALA A   6       4.709   7.597   3.208  1.00 20.00           C  
+ATOM     23 C    ALA A   6       4.899   7.721   4.716  1.00 20.00           C  
+ATOM     24 O    ALA A   6       5.676   8.555   5.181  1.00 20.00           O  
+ATOM     25 N    ALA A   7       4.187   6.887   5.467  1.00 20.00           N  
+ATOM     26 CA   ALA A   7       4.276   6.902   6.922  1.00 20.00           C  
+ATOM     27 C    ALA A   7       5.712   6.685   7.389  1.00 20.00           C  
+ATOM     28 O    ALA A   7       6.204   7.410   8.254  1.00 20.00           O  
+ATOM     29 N    ALA A   8       6.372   5.687   6.812  1.00 20.00           N  
+ATOM     30 CA   ALA A   8       7.751   5.373   7.167  1.00 20.00           C  
+ATOM     31 C    ALA A   8       8.660   6.581   6.968  1.00 20.00           C  
+ATOM     32 O    ALA A   8       9.462   6.911   7.842  1.00 20.00           O  
+ATOM     33 N    ALA A   9       8.528   7.232   5.817  1.00 20.00           N  
+ATOM     34 CA   ALA A   9       9.336   8.403   5.502  1.00 20.00           C  
+ATOM     35 C    ALA A   9       9.171   9.489   6.560  1.00 20.00           C  
+ATOM     36 O    ALA A   9      10.157  10.056   7.032  1.00 20.00           O  
+ATOM     37 N    ALA A  10       7.924   9.768   6.925  1.00 20.00           N  
+ATOM     38 CA   ALA A  10       7.629  10.785   7.927  1.00 20.00           C  
+ATOM     39 C    ALA A  10       8.339  10.485   9.243  1.00 20.00           C  
+ATOM     40 O    ALA A  10       8.955  11.370   9.836  1.00 20.00           O  
+ATOM     41 N    ALA A  11       8.247   9.236   9.688  1.00 20.00           N  
+ATOM     42 CA   ALA A  11       8.881   8.818  10.933  1.00 20.00           C  
+ATOM     43 C    ALA A  11      10.381   9.091  10.908  1.00 20.00           C  
+ATOM     44 O    ALA A  11      10.933   9.635  11.864  1.00 20.00           O  
+ATOM     45 N    ALA A  12      11.028   8.711   9.811  1.00 20.00           N  
+ATOM     46 CA   ALA A  12      12.464   8.914   9.659  1.00 20.00           C  
+ATOM     47 C    ALA A  12      12.832  10.386   9.813  1.00 20.00           C  
+ATOM     48 O    ALA A  12      13.774  10.723  10.530  1.00 20.00           O  
+TER      49      ALA A  12
+END

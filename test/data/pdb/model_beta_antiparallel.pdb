@@ -1,0 +1,55 @@
+HEADER    IDEALIZED ANTIPARALLEL BETA-SHEET BACKBONE MODEL FRAGMENT
+REMARK    IDEALIZED MODEL FRAGMENT (TWO ANTIPARALLEL STRANDS) GENERATED
+REMARK    FOR BIORUBY TESTS. EXPECTED DSSP-STYLE ASSIGNMENT:
+REMARK    ' EEEE  EEEE '
+ATOM      1 N    ALA A   1      -9.863   0.625   0.641  1.00 20.00           N  
+ATOM      2 CA   ALA A   1      -8.702   0.030  -0.012  1.00 20.00           C  
+ATOM      3 C    ALA A   1      -7.412   0.712   0.429  1.00 20.00           C  
+ATOM      4 O    ALA A   1      -7.343   1.939   0.491  1.00 20.00           O  
+ATOM      5 N    ALA A   2      -6.398  -0.092   0.734  1.00 20.00           N  
+ATOM      6 CA   ALA A   2      -5.109   0.432   1.170  1.00 20.00           C  
+ATOM      7 C    ALA A   2      -3.957  -0.342   0.539  1.00 20.00           C  
+ATOM      8 O    ALA A   2      -3.979  -1.573   0.499  1.00 20.00           O  
+ATOM      9 N    ALA A   3      -2.958   0.386   0.050  1.00 20.00           N  
+ATOM     10 CA   ALA A   3      -1.797  -0.231  -0.579  1.00 20.00           C  
+ATOM     11 C    ALA A   3      -0.508   0.473  -0.168  1.00 20.00           C  
+ATOM     12 O    ALA A   3      -0.443   1.702  -0.158  1.00 20.00           O  
+ATOM     13 N    ALA A   4       0.509  -0.315   0.167  1.00 20.00           N  
+ATOM     14 CA   ALA A   4       1.797   0.231   0.579  1.00 20.00           C  
+ATOM     15 C    ALA A   4       2.951  -0.565  -0.021  1.00 20.00           C  
+ATOM     16 O    ALA A   4       2.933  -1.795  -0.010  1.00 20.00           O  
+ATOM     17 N    ALA A   5       3.946   0.146  -0.541  1.00 20.00           N  
+ATOM     18 CA   ALA A   5       5.109  -0.492  -1.146  1.00 20.00           C  
+ATOM     19 C    ALA A   5       6.396   0.232  -0.766  1.00 20.00           C  
+ATOM     20 O    ALA A   5       6.456   1.461  -0.805  1.00 20.00           O  
+ATOM     21 N    ALA A   6       7.416  -0.537  -0.400  1.00 20.00           N  
+ATOM     22 CA   ALA A   6       8.702   0.030  -0.012  1.00 20.00           C  
+ATOM     23 C    ALA A   6       9.858  -0.786  -0.581  1.00 20.00           C  
+ATOM     24 O    ALA A   6       9.845  -2.015  -0.520  1.00 20.00           O  
+TER      25      ALA A   6
+ATOM     26 N    ALA B  11       7.863  -3.679   0.383  1.00 20.00           N  
+ATOM     27 CA   ALA B  11       6.702  -3.868   1.245  1.00 20.00           C  
+ATOM     28 C    ALA B  11       5.412  -3.498   0.522  1.00 20.00           C  
+ATOM     29 O    ALA B  11       5.343  -2.466  -0.145  1.00 20.00           O  
+ATOM     30 N    ALA B  12       4.398  -4.346   0.660  1.00 20.00           N  
+ATOM     31 CA   ALA B  12       3.109  -4.111   0.021  1.00 20.00           C  
+ATOM     32 C    ALA B  12       1.957  -4.466   0.955  1.00 20.00           C  
+ATOM     33 O    ALA B  12       1.979  -5.511   1.604  1.00 20.00           O  
+ATOM     34 N    ALA B  13       0.958  -3.591   1.014  1.00 20.00           N  
+ATOM     35 CA   ALA B  13      -0.203  -3.811   1.867  1.00 20.00           C  
+ATOM     36 C    ALA B  13      -1.492  -3.407   1.159  1.00 20.00           C  
+ATOM     37 O    ALA B  13      -1.557  -2.347   0.536  1.00 20.00           O  
+ATOM     38 N    ALA B  14      -2.509  -4.256   1.262  1.00 20.00           N  
+ATOM     39 CA   ALA B  14      -3.797  -3.989   0.633  1.00 20.00           C  
+ATOM     40 C    ALA B  14      -4.951  -4.379   1.550  1.00 20.00           C  
+ATOM     41 O    ALA B  14      -4.933  -5.450   2.157  1.00 20.00           O  
+ATOM     42 N    ALA B  15      -5.946  -3.503   1.645  1.00 20.00           N  
+ATOM     43 CA   ALA B  15      -7.109  -3.753   2.488  1.00 20.00           C  
+ATOM     44 C    ALA B  15      -8.396  -3.316   1.797  1.00 20.00           C  
+ATOM     45 O    ALA B  15      -8.456  -2.232   1.217  1.00 20.00           O  
+ATOM     46 N    ALA B  16      -9.416  -4.165   1.864  1.00 20.00           N  
+ATOM     47 CA   ALA B  16     -10.702  -3.868   1.245  1.00 20.00           C  
+ATOM     48 C    ALA B  16     -11.858  -4.290   2.146  1.00 20.00           C  
+ATOM     49 O    ALA B  16     -11.845  -5.385   2.708  1.00 20.00           O  
+TER      50      ALA B  16
+END
