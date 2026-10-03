@@ -121,6 +121,7 @@ module Bio
   autoload :FastaDefline,       'bio/db/fasta/defline' # change to FastaFormat::Defline ?
   autoload :Fastq,          'bio/db/fastq'
   autoload :GFF,            'bio/db/gff'
+  autoload :VCF,            'bio/db/vcf'
   autoload :AAindex,        'bio/db/aaindex'
   autoload :AAindex1,       'bio/db/aaindex' # change to AAindex::AAindex1 ?
   autoload :AAindex2,       'bio/db/aaindex' # change to AAindex::AAindex2 ?
@@ -275,4 +276,3 @@ module Bio
   autoload :Command,        'bio/command'
 
 end
-

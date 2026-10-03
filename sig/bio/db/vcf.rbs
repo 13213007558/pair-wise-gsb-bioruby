@@ -1,0 +1,90 @@
+class Bio::VCF
+  META_PREFIX: String
+  HEADER_PREFIX: String
+  FIXED_COLUMNS: Array[String]
+
+  class Header
+    attr_accessor meta_lines: Array[String]
+    attr_accessor sample_names: Array[String]
+    attr_accessor info: Hash[String, Hash[String, String]]
+    attr_accessor format: Hash[String, Hash[String, String]]
+
+    def initialize: () -> void
+  end
+
+  class Record
+    attr_accessor chrom: String?
+    attr_accessor pos: Integer
+    attr_accessor id: String?
+    attr_accessor ref: String?
+    attr_accessor alt: Array[String]
+    attr_accessor qual: String?
+    attr_accessor filter: String?
+    attr_accessor info: Hash[String, untyped]
+    attr_accessor format: Array[String]
+    attr_accessor samples: Hash[String, Hash[String, String?]]
+    attr_accessor header: Header?
+    attr_accessor normalization_status: Symbol?
+
+    def initialize: (?String? line, ?Header? header) -> void
+    def symbolic?: () -> bool
+    def explicit_alleles?: () -> bool
+    def to_s: () -> String
+  end
+
+  class Normalizer
+    BUILTIN_INFO: Hash[String, String]
+    BUILTIN_FORMAT: Hash[String, String]
+
+    def self.symbolic_allele?: (String allele) -> bool
+    def initialize: (?untyped reference, ?sequence_start: Integer) -> void
+    def normalize: (Record record, ?split: bool) -> (Record | Array[Record])
+    def normalize_record: (Record record, ?split: bool) -> (Record | Array[Record])
+    def split: (Record record) -> Array[Record]
+  end
+
+  class AlleleNormalizer
+    def initialize: (String sequence, Integer sequence_start) -> void
+    def normalize: (Record record) -> Record
+  end
+
+  class FieldRewriter
+    INFO_NUMBERS: Hash[String, String]
+    FORMAT_NUMBERS: Hash[String, String]
+
+    def initialize: () -> void
+    def split_value: (String?, String?, Integer, Integer, Integer?) -> String?
+    def split_gt: (String?, Integer) -> String?
+    def split_pl: (String?, Integer, Integer, Integer?) -> String?
+    def ploidy_from_gt: (String?) -> Integer?
+  end
+
+  class GenotypeRewriter
+    def split_gt: (String?, Integer) -> String?
+    def split_values: (Array[String?], Integer, Integer, Integer?) -> Array[String?]
+    def split_pl: (Array[String?], Integer, Integer, Integer?) -> Array[Integer | String]
+    def normalize_selected_pl: (Array[String?]) -> String
+    def ploidy: (String?) -> Integer?
+    def infer_ploidy: (Integer, Integer) -> Integer?
+  end
+
+  class RecordSplitter
+    def initialize: () -> void
+    def split: (Record record, Integer selected_index) -> Record
+  end
+
+  module RecordParser
+  end
+
+  module RecordSerializer
+  end
+
+  attr_accessor header: Header
+  attr_accessor records: Array[Record]
+
+  def initialize: (?String str) -> void
+  def each_record: () { (Record) -> void } -> Array[Record]
+  def normalize!: (untyped reference, ?sequence_start: Integer, ?split: bool) -> Array[Record]
+  def normalize: (untyped reference, ?sequence_start: Integer, ?split: bool) -> Bio::VCF
+  def to_s: () -> String
+end
