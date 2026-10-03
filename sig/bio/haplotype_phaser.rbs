@@ -1,0 +1,41 @@
+# Type signatures for Bio::HaplotypePhaser
+
+module Bio
+  class HaplotypePhaser
+    class Result
+      attr_reader sites: Array[Integer]
+      attr_reader haplotypes: Array[Array[Integer?]]
+      attr_reader assignments: Array[Integer]
+      attr_reader cost: Integer
+      attr_reader lower_bound: Integer
+      attr_reader upper_bound: Integer
+      attr_reader blocks: Array[BlockResult]?
+
+      def initialize: (sites: Array[Integer], haplotypes: Array[Array[Integer?]],
+                       assignments: Array[Integer], cost: Integer,
+                       lower_bound: Integer, upper_bound: Integer,
+                       complete: bool, ?blocks: Array[BlockResult]?) -> void
+      def optimal?: () -> bool
+    end
+
+    class BlockResult < Result
+      attr_reader fragment_indices: Array[Integer]
+
+      def initialize: (fragment_indices: Array[Integer], **untyped rest) -> void
+    end
+
+    class ExhaustiveResult < Struct[untyped]
+      attr_accessor cost: Integer
+      attr_accessor solutions: Integer
+    end
+
+    EXHAUSTIVE_MAX_FRAGMENTS: Integer
+
+    def initialize: (Array[Hash[Integer, Integer] | Array[Integer?]] fragments,
+                     ?weights: Array[Integer]?, ?budget: Integer?) -> void
+    def phase: () -> Result
+    def self.exhaustive: (Array[Hash[Integer, Integer] | Array[Integer?]] fragments,
+                          ?weights: Array[Integer]?,
+                          ?max_fragments: Integer) -> ExhaustiveResult
+  end
+end
