@@ -1,0 +1,54 @@
+# Type signatures for Bio::Phasing class
+
+module Bio
+  # Diploid haplotype phasing by weighted minimum error correction
+  # (MEC).
+  class Phasing
+    # Default exact-search budget (maximum number of search nodes).
+    DEFAULT_MAX_NODES: Integer
+
+    # Result of a phasing run.
+    class Result
+      attr_reader blocks: Array[BlockResult]
+      attr_reader cost: Integer
+      attr_reader lower_bound: Integer
+      attr_reader nodes: Integer
+
+      def optimal?: () -> bool
+      def sites: () -> Array[Integer]
+      def haplotypes: () -> Array[Array[Integer]]
+      def assignment: () -> Array[Integer]
+    end
+
+    # Phasing result of one connected block of heterozygous sites.
+    class BlockResult
+      attr_reader sites: Array[Integer]
+      attr_reader haplotypes: Array[Array[Integer]]
+      attr_reader assignment: Hash[Integer, Integer]
+      attr_reader cost: Integer
+      attr_reader lower_bound: Integer
+      attr_reader nodes: Integer
+
+      def optimal?: () -> bool
+    end
+
+    # Result of exhaustive enumeration.
+    class ExhaustiveResult
+      attr_reader cost: Integer
+      attr_reader optimal_count: Integer
+    end
+
+    # Normalized input fragment (internal).
+    class Fragment
+      attr_reader index: Integer
+      attr_reader weight: Integer
+      attr_reader sites: Array[Integer]
+      attr_reader alleles: Array[Integer]
+    end
+
+    def initialize: (Array[Hash[Integer, Integer?] | Array[[Integer, Integer?]]] fragments, ?weights: Array[Integer]?) -> void
+    def phase: (?max_nodes: Numeric?) -> Result
+    def exhaustive: (?max_fragments: Integer) -> ExhaustiveResult
+    def self.exhaustive: (Array[Hash[Integer, Integer?] | Array[[Integer, Integer?]]] fragments, ?weights: Array[Integer]?, ?max_fragments: Integer) -> ExhaustiveResult
+  end
+end
